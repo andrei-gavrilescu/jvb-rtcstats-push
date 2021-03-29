@@ -179,9 +179,29 @@ function setupWebsocket(url) {
             keepalive: true,
             keepaliveInterval: 20000,
         });
-        client.on('connectFailed', reject);
+
+        client.on('connectFailed', (reject));
+
         // Handle issues with the connection after it's connected
-        client.on('connect', resolve);
+        client.on('connect', ( connection ) => {
+
+            console.log('WebSocket Client Connected');
+
+            connection.on('error', function(error) {
+                console.log("Connection Error: " + error.toString());
+            });
+
+            connection.on('close', function() {
+                console.log('echo-protocol Connection Closed');
+            });
+
+            connection.on('message', function(message) {
+                if (message.type === 'utf8') {
+                    // console.log("Received: '" + message.utf8Data + "'");
+                }
+            });
+        });
+
         client.connect(url,
             '3.0_JVB',
             os.hostname(),
